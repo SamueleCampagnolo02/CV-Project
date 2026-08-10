@@ -1,13 +1,10 @@
-// Waste detection inference for the TACO baseline model (60 original
-// classes, no macro-grouping), using YOLO26 exported to ONNX.
+// Inference per il modello TACO a 12 Macro-Categorie usando YOLO26 ONNX.
+// Usage: taco_detector <model.onnx> <images_folder>
+
+// Waste detection inference for the TACO model (12 Macro-Categories)
+// using YOLO26 exported to ONNX.
 //
-// YOLO26's end-to-end head already filters most duplicates internally,
-// but with a weak model (low mAP) overlapping boxes can still appear,
-// so NMS is applied here as an extra safety filter: among overlapping
-// boxes, only the highest-confidence one is kept.
-//
-// Usage:
-//   taco_detector <model.onnx> <images_folder>
+// Usage: taco_detector <model.onnx> <images_folder>
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/utils/logger.hpp>
@@ -16,79 +13,29 @@
 #include <string>
 #include <filesystem>
 
-// Class names must match the exact order in the original TACO
-// annotations.json (60 categories, no grouping).
+// 12 Macro-Categorie usate nell'addestramento Kaggle (ordine 0-11)
 static const std::vector<std::string> CLASS_NAMES = {
-    "Aluminium foil",
-    "Battery",
-    "Aluminium blister pack",
-    "Carded blister pack",
-    "Other plastic bottle",
-    "Clear plastic bottle",
-    "Glass bottle",
-    "Plastic bottle cap",
-    "Metal bottle cap",
-    "Broken glass",
-    "Food Can",
-    "Aerosol",
-    "Drink can",
-    "Toilet tube",
-    "Other carton",
-    "Egg carton",
-    "Drink carton",
-    "Corrugated carton",
-    "Meal carton",
-    "Pizza box",
-    "Paper cup",
-    "Disposable plastic cup",
-    "Foam cup",
-    "Glass cup",
-    "Other plastic cup",
-    "Food waste",
-    "Glass jar",
-    "Plastic lid",
-    "Metal lid",
-    "Other plastic",
-    "Magazine paper",
-    "Tissues",
-    "Wrapping paper",
-    "Normal paper",
-    "Paper bag",
-    "Plastified paper bag",
-    "Plastic film",
-    "Six pack rings",
-    "Garbage bag",
-    "Other plastic wrapper",
-    "Single-use carrier bag",
-    "Polypropylene bag",
-    "Crisp packet",
-    "Spread tub",
-    "Tupperware",
-    "Disposable food container",
-    "Foam food container",
-    "Other plastic container",
-    "Plastic glooves",
-    "Plastic utensils",
-    "Pop tab",
-    "Rope & strings",
-    "Scrap metal",
-    "Shoe",
-    "Squeezable tube",
-    "Plastic straw",
-    "Paper straw",
-    "Styrofoam piece",
-    "Unlabeled litter",
-    "Cigarette"
+    "Plastic_Bottles_and_Containers", // 0
+    "Plastic_Films_and_Wrappers",     // 1
+    "Caps_and_Lids",                  // 2
+    "Metal_and_Cans",                 // 3
+    "WEEE_and_Electronics",           // 4
+    "Hazardous_and_Toxic",            // 5
+    "Glass",                          // 6
+    "Paper_and_Cardboard",            // 7
+    "Styrofoam",                      // 8
+    "Cigarette_Butts",                // 9
+    "Organic_Waste",                  // 10
+    "Other_Trash"                     // 11
 };
 
-// A few categories are treated as safety-relevant for display purposes
-// (drawn in red instead of green).
+// Categorie evidenziate in ROSSO per rilievo visivo
 static bool isDangerous(const std::string& label) {
-    return label == "Battery" || label == "Broken glass";
+    return label == "Hazardous_and_Toxic" || label == "Glass" || label == "WEEE_and_Electronics";
 }
 
 static const int INPUT_SIZE = 640;
-static const float CONF_THRESHOLD = 0.05f;
+static const float CONF_THRESHOLD = 0.20f; // Soglia confidenza (20%)
 static const float NMS_IOU_THRESHOLD = 0.45f;
 
 struct Detection {
@@ -97,10 +44,7 @@ struct Detection {
     int class_id;
 };
 
-// Resizes the image to INPUT_SIZE x INPUT_SIZE while preserving aspect
-// ratio, padding with gray borders (letterboxing). Returns the scale
-// factor and padding offsets, needed later to map boxes back to the
-// original image coordinates.
+// Ridimensiona l'immagine a INPUT_SIZE x INPUT_SIZE mantenendo l'aspect ratio (letterboxing)
 cv::Mat letterbox(const cv::Mat& src, float& scale, int& pad_x, int& pad_y) {
     int w = src.cols;
     int h = src.rows;
@@ -132,6 +76,7 @@ int main(int argc, char** argv) {
     std::string model_path = argv[1];
     std::string folder_path = argv[2];
 
+    // Caricamento rete ONNX
     cv::dnn::Net net = cv::dnn::readNetFromONNX(model_path);
     if (net.empty()) {
         std::cerr << "Error: could not load ONNX model at " << model_path << std::endl;
@@ -140,6 +85,7 @@ int main(int argc, char** argv) {
     net.setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV);
     net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
 
+    // Lettura delle immagini dalla cartella
     std::vector<std::string> image_paths;
     for (const auto& entry : std::filesystem::directory_iterator(folder_path)) {
         if (!entry.is_regular_file()) continue;
@@ -155,7 +101,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    cv::namedWindow("TACO Detection", cv::WINDOW_NORMAL);
+    cv::namedWindow("TACO Waste Detection", cv::WINDOW_NORMAL);
 
     for (const auto& image_path : image_paths) {
         cv::Mat image = cv::imread(image_path);
@@ -175,16 +121,31 @@ int main(int argc, char** argv) {
         );
         net.setInput(blob);
 
-        // --- Inference ---
-        cv::Mat output = net.forward();
-        // Expected shape: [1, 300, 6] -> reshape to [300, 6] for easy access
-        cv::Mat detections = output.reshape(1, output.size[1]);
+        // --- Inference Sicura ---
+        cv::Mat output;
+        try {
+            output = net.forward();
+        } catch (const cv::Exception& e) {
+            std::cerr << "❌ Errore durante net.forward(): " << e.what() << std::endl;
+            continue;
+        }
 
-        // --- Collect raw candidate detections above the confidence threshold ---
+        // Conversione sicura da tensore 3D [1, 300, 6] a matrice 2D [300, 6] senza usare .reshape()
+        cv::Mat detections;
+        if (output.dims == 3) {
+            detections = cv::Mat(output.size[1], output.size[2], CV_32F, const_cast<float*>(output.ptr<float>(0)));
+        } else if (output.dims == 2) {
+            detections = output;
+        } else {
+            std::cerr << "Formato output non supportato (dims = " << output.dims << ")" << std::endl;
+            continue;
+        }
+
         std::vector<cv::Rect> raw_boxes;
         std::vector<float> raw_confidences;
         std::vector<int> raw_class_ids;
 
+        // Estrazione risultati
         for (int i = 0; i < detections.rows; ++i) {
             float x1 = detections.at<float>(i, 0);
             float y1 = detections.at<float>(i, 1);
@@ -197,7 +158,7 @@ int main(int argc, char** argv) {
                 continue;
             }
 
-            // Undo the letterbox transform to map back to original image coordinates
+            // Mappatura coordinate sull'immagine originale
             float orig_x1 = (x1 - pad_x) / scale;
             float orig_y1 = (y1 - pad_y) / scale;
             float orig_x2 = (x2 - pad_x) / scale;
@@ -207,16 +168,14 @@ int main(int argc, char** argv) {
                 cv::Point(static_cast<int>(orig_x1), static_cast<int>(orig_y1)),
                 cv::Point(static_cast<int>(orig_x2), static_cast<int>(orig_y2))
             );
-            box &= cv::Rect(0, 0, image.cols, image.rows); // clip to image bounds
+            box &= cv::Rect(0, 0, image.cols, image.rows); // Ritaglio entro i bordi dell'immagine
 
             raw_boxes.push_back(box);
             raw_confidences.push_back(confidence);
             raw_class_ids.push_back(class_id);
         }
 
-        // --- Non-Maximum Suppression ---
-        // Among overlapping boxes (IoU > NMS_IOU_THRESHOLD), keep only the
-        // one with the highest confidence.
+        // --- Non-Maximum Suppression (NMS) ---
         std::vector<int> nms_indices;
         cv::dnn::NMSBoxes(raw_boxes, raw_confidences, CONF_THRESHOLD, NMS_IOU_THRESHOLD, nms_indices);
 
@@ -225,29 +184,41 @@ int main(int argc, char** argv) {
             results.push_back({raw_boxes[idx], raw_confidences[idx], raw_class_ids[idx]});
         }
 
-        // --- Draw + print ---
-        std::cout << "--- " << std::filesystem::path(image_path).filename().string() << " ---" << std::endl;
+        // --- Disegno a schermo e Log ---
+        std::cout << "\n=== " << std::filesystem::path(image_path).filename().string() << " ===" << std::endl;
         for (const auto& det : results) {
             std::string label = (det.class_id >= 0 && det.class_id < static_cast<int>(CLASS_NAMES.size()))
                 ? CLASS_NAMES[det.class_id]
-                : "unknown";
+                : "Unknown";
 
             cv::Scalar color = isDangerous(label) ? cv::Scalar(0, 0, 255) : cv::Scalar(0, 255, 0);
 
+            // Disegno del rettangolo
             cv::rectangle(image, det.box, color, 2);
-            std::string text = label + " " + cv::format("%.2f", det.confidence);
-            cv::putText(image, text, cv::Point(det.box.x, det.box.y - 5),
-                        cv::FONT_HERSHEY_SIMPLEX, 0.5, color, 2);
+            
+            // Disegno del testo con sfondo pieno per migliore leggibilita
+            std::string text = label + " (" + cv::format("%.2f", det.confidence) + ")";
+            int baseline = 0;
+            cv::Size textSize = cv::getTextSize(text, cv::FONT_HERSHEY_SIMPLEX, 0.5, 1, &baseline);
+            
+            cv::Point textOrg(det.box.x, std::max(det.box.y - 5, textSize.height));
+            cv::rectangle(image, cv::Point(textOrg.x, textOrg.y - textSize.height - 2),
+                          cv::Point(textOrg.x + textSize.width, textOrg.y + baseline), color, cv::FILLED);
+            
+            cv::putText(image, text, textOrg, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0), 1);
 
-            std::cout << label << " (" << cv::format("%.2f", det.confidence) << ")" << std::endl;
+            std::cout << " -> " << label << " [" << cv::format("%.2f", det.confidence) << "]" << std::endl;
         }
+
         if (results.empty()) {
-            std::cout << "No objects detected." << std::endl;
+            std::cout << " Nessun rifiuto rilevato." << std::endl;
         }
 
-        cv::resizeWindow("TACO Detection", 900, 900 * image.rows / image.cols);
-        cv::imshow("TACO Detection", image);
-        std::cout << "Press any key for next image (or 'q' to quit)..." << std::endl;
+        // Visualizzazione finestra
+        cv::resizeWindow("TACO Waste Detection", 900, 900 * image.rows / image.cols);
+        cv::imshow("TACO Waste Detection", image);
+        
+        std::cout << "Premere un tasto qualsiasi per la foto successiva ('q' per uscire)..." << std::endl;
         int key = cv::waitKey(0);
         if (key == 'q' || key == 'Q') {
             break;

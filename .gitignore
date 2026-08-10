@@ -28,3 +28,7 @@ __pycache__/
 
 # Personal/exploratory scripts, not part of the tracked project
 other/
+
+
+taco_full_classes/test_images/
+taco_full_classes/build
