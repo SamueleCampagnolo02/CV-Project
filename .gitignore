@@ -29,6 +29,12 @@ __pycache__/
 # Personal/exploratory scripts, not part of the tracked project
 other/
 
+<<<<<<< HEAD
 # Local PyTorch checkpoints for incremental training (not versioned, regenerable)
 *.pt
 syringe-detection/extended-dataset/annotations-extended-dataset/
+=======
+
+taco_full_classes/test_images/
+taco_full_classes/build
+>>>>>>> 90b0602 (Updated model and code with 12 bigger categories)
