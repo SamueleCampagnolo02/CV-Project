@@ -30,3 +30,5 @@ __pycache__/
 other/
 # Local PyTorch checkpoints for incremental training (not versioned, regenerable)
 *.pt
+
+syringe-detection/extended-dataset/annotations-extended-dataset/
