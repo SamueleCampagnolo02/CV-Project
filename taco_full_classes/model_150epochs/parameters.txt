@@ -1,0 +1,12 @@
+﻿model=yolo26n.pt
+dataset=taco_yolo
+num_classes=60
+epochs=150
+epochs_note=50 initial + 100 additional incremental training
+imgsz=640
+batch=16
+device=0
+mAP50=0.12604
+mAP50_95=0.0983
+precision=0.29298
+recall=0.14055
