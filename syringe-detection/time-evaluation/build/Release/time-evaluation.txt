@@ -1,0 +1,9 @@
+=== Inference Timing Report ===
+Frames processed: 64
+Total detections: 93
+Mean time:        104.34 ms
+Median time:      101.81 ms
+Std deviation:    26.15 ms
+Min time:         79.44 ms
+Max time:         278.69 ms
+Effective FPS:    9.58
