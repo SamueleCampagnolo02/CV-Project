@@ -21,6 +21,7 @@ runs_syringe/
 # C++ build artifacts (regenerable via cmake, sources stay tracked)
 inference/build/
 inference_syringe/build/
+syringe-detection/time-evaluation/build/
 
 # Python cache
 __pycache__/
@@ -28,5 +29,7 @@ __pycache__/
 
 # Personal/exploratory scripts, not part of the tracked project
 other/
+
 # Local PyTorch checkpoints for incremental training (not versioned, regenerable)
-*.ptsyringe-detection/time-evaluation/build/
+*.pt
+syringe-detection/extended-dataset/annotations-extended-dataset/
