@@ -1,3 +1,0 @@
-C:/Users/tcard/OneDrive/Desktop/CV-Project/syringe-detection/time-evaluation/build/CMakeFiles/syringe_detector.dir
-C:/Users/tcard/OneDrive/Desktop/CV-Project/syringe-detection/time-evaluation/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/tcard/OneDrive/Desktop/CV-Project/syringe-detection/time-evaluation/build/CMakeFiles/ZERO_CHECK.dir

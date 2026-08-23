@@ -29,4 +29,4 @@ __pycache__/
 # Personal/exploratory scripts, not part of the tracked project
 other/
 # Local PyTorch checkpoints for incremental training (not versioned, regenerable)
-*.pt
+*.ptsyringe-detection/time-evaluation/build/
