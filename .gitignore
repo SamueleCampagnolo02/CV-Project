@@ -18,10 +18,9 @@ runs_syringe/
 # Transfer archives (Colab/Kaggle <-> local)
 *.zip
 
-# C++ build artifacts (regenerable via cmake, sources stay tracked)
-inference/build/
-inference_syringe/build/
-syringe-detection/time-evaluation/build/
+# C++ build artifacts (ignora qualsiasi cartella build nel progetto)
+build/
+**/build/
 
 # Python cache
 __pycache__/
