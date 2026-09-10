@@ -1,13 +1,4 @@
-﻿"""
-Converte le annotazioni COCO di TACO in formato YOLO, mantenendo TUTTE
-le categorie originali (nessun raggruppamento), e crea lo split train/val.
-
-Le classi non vengono indovinate o scritte a mano: lo script legge
-direttamente coco["categories"] dal file annotations.json, quindi usa
-sempre gli ID e i nomi esatti presenti nel tuo file.
-"""
-
-import argparse
+﻿import argparse
 import json
 import random
 import shutil
@@ -30,7 +21,7 @@ def convert(taco_dir: Path, out_dir: Path, val_ratio: float, seed: int = 42):
         coco = json.load(f)
 
     cat_map, class_names = build_category_map(coco)
-    print(f"Trovate {len(class_names)} categorie nel file annotations.json:")
+    print(f"Found {len(class_names)} categories in annotations.json:")
     for i, name in enumerate(class_names):
         print(f"  {i}: {name}")
 
@@ -81,8 +72,8 @@ def convert(taco_dir: Path, out_dir: Path, val_ratio: float, seed: int = 42):
         label_path.write_text("\n".join(lines), encoding="utf-8")
         written += 1
 
-    print(f"Immagini convertite: {written}")
-    print(f"Immagini mancanti su disco: {missing}")
+    print(f"Images converted: {written}")
+    print(f"Images missing on disk: {missing}")
 
     yaml_content = (
         f"path: {out_dir.resolve()}\n"
@@ -93,7 +84,7 @@ def convert(taco_dir: Path, out_dir: Path, val_ratio: float, seed: int = 42):
         + "\n"
     )
     (out_dir / "data.yaml").write_text(yaml_content, encoding="utf-8")
-    print(f"data.yaml creato in {out_dir / 'data.yaml'}")
+    print(f"data.yaml created at {out_dir / 'data.yaml'}")
 
 
 if __name__ == "__main__":
