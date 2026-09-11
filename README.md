@@ -197,11 +197,9 @@ https://drive.google.com/file/d/1xsx4JIkyj-Akhs5JtXaWkQLjETJQeSaF/view?usp=shari
 Claude (Anthropic) was used throughout this project as a development assistant, specifically for:
 - Drafting and debugging Python scripts (dataset conversion, deduplication, visualization utilities)
 - Drafting and debugging C++ inference code (OpenCV DNN pipeline, preprocessing, NMS)
-- Assisting with Git/GitHub workflow (branching, merging, conflict resolution)
 - Assisting with Kaggle notebook structure for model training
-- Reviewing experiment results and suggesting hyperparameter adjustments between training runs
 
-All design decisions (dataset composition, model architecture choices, training strategy, evaluation methodology) were made by the project author. AI-generated code was reviewed, tested, and adapted before inclusion.
+All design decisions (dataset composition, model architecture choices, training strategy, evaluation methodology) were made by the project authors. AI-generated code was reviewed, tested, and adapted before inclusion.
 
 ### Third-Party Code and Libraries
 
