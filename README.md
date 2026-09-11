@@ -176,15 +176,10 @@ https://drive.google.com/file/d/1xsx4JIkyj-Akhs5JtXaWkQLjETJQeSaF/view?usp=shari
 
 ## 6. Experimental Results
 
-### TACO Waste Classification
-
-| Experiment       | Classes | Epochs             | Precision | Recall | mAP50 | mAP50-95 |
-|:-----------------|:-------:|:------------------:|:---------:|:------:|:-----:|:--------:|
-| Full classes     | 60      | 50                 | 0.358     | 0.108  | 0.101 | 0.083    |
-| Full classes     | 60      | 150 (incremental)  | 0.293     | 0.141  | 0.126 | 0.098    |
-| Macro-categories | 7       | 50                 | 0.522     | 0.216  | 0.172 | 0.124    |
 
 ### Syringe Detection
+
+Each syringe model directory includes a parameters.txt file summarizing the core training hyperparameters and run configuration.
 
 | Experiment                              | Model   | Images | Epochs                   | Precision | Recall | mAP50 | mAP50-95 |
 |:----------------------------------------|:-------:|:------:|:------------------------:|:---------:|:------:|:-----:|:--------:|
