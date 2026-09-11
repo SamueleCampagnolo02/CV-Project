@@ -97,14 +97,20 @@ CV-Project/
 │   ├── coco_to_yolo.py                 # Full TACO category converter
 │   └── coco_to_yolo_syringe.py         # Filtered converter isolating syringe instances
 │
-├── taco_full_classes/                  # Phase 1: Multi-class TACO training & eval
-│   ├── train_taco.ipynb                # Training notebook on TACO benchmark
-│   ├── model_50epochs/                 # Checkpoints & curves (50 epochs)
-│   ├── model_150epochs/                # Checkpoints & curves (150 epochs)
-│   ├── evaluation/                     # Metric plots, PR curves, and matrices
-│   ├── src/                            # C++ inference prototype for TACO
-│   └── CMakeLists.txt                  # Build configuration
-│
+├── TACO/
+│   ├── evaluation/
+│   ├── Improved taco/
+│   │   ├── metrics/
+│   │   ├── sample_images/
+│   │   ├── src/
+│   │   │   └── main.cpp
+│   │   ├── best.onnx
+│   │   ├── CMakeLists.txt
+│   │   └── taco_imgsz_1024.ipynb
+│   ├── model_50epochs/
+│   │   └── model.onnx
+│   └── model_150epochs/
+│         └── model.onnx
 ├──  syringe-detection/                  # Phase 2: Dedicated syringe detector
        ├── first-dataset/                  # Initial baseline single-class dataset & runs
        ├── extended-dataset/               # Extended dataset 
