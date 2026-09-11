@@ -160,6 +160,16 @@ cmake --build . --config Release
 CANCEL CONTENT INSIDE BUILD
 if ((Get-Item .).Name -eq 'build') { Remove-Item * -Recurse -Force; "Build directory contents deleted." } else { Write-Error "WARNING: Current working directory is not 'build'!" }
 
+
+- COMPILE AND EXECUTE TACO DETECTOR
+cd "TACO/Improved taco"
+mkdir build -Force
+cd build
+cmake -DOpenCV_DIR="C:/dev/opencv/build/x64/vc16/lib" .. 
+cmake --build . --config Release     
+.\Release\taco_detector.exe ..\best.onnx ..\sample_images
+
+
 DATASET
 https://drive.google.com/file/d/1xsx4JIkyj-Akhs5JtXaWkQLjETJQeSaF/view?usp=sharing
 
