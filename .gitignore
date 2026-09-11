@@ -2,12 +2,14 @@
 taco-env/
 
 # Raw datasets (regenerable via the scripts in taco_prep/)
-TACO/
+
 taco_yolo/
 taco_yolo_macro/
 custom_syringe_yolo/
 custom_syringe/images/
 custom_syringe/test_images_2/
+taco_full_classes/test_images/
+syringe-detection/extended-dataset/annotations-extended-dataset/
 
 # Training run outputs (plots, logs, training batches: heavy and regenerable by retraining)
 runs/
@@ -15,12 +17,16 @@ runs_taco/
 runs_taco_macro/
 runs_syringe/
 
+# Local PyTorch checkpoints (heavy binary files, not versioned)
+*.pt
+
 # Transfer archives (Colab/Kaggle <-> local)
 *.zip
 
 # C++ build artifacts (ignora qualsiasi cartella build nel progetto)
 build/
 **/build/
+taco_full_classes/build/
 
 # Python cache
 __pycache__/
@@ -28,13 +34,3 @@ __pycache__/
 
 # Personal/exploratory scripts, not part of the tracked project
 other/
-
-<<<<<<< HEAD
-# Local PyTorch checkpoints for incremental training (not versioned, regenerable)
-*.pt
-syringe-detection/extended-dataset/annotations-extended-dataset/
-=======
-
-taco_full_classes/test_images/
-taco_full_classes/build
->>>>>>> 90b0602 (Updated model and code with 12 bigger categories)
