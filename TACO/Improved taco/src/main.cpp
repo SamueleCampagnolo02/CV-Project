@@ -34,7 +34,7 @@ static bool isDangerous(const std::string& label) {
     return label == "Hazardous_and_Toxic" || label == "Glass" || label == "WEEE_and_Electronics";
 }
 
-static const int INPUT_SIZE = 640;
+static const int INPUT_SIZE = 1024;
 static const float CONF_THRESHOLD = 0.20f; // Soglia confidenza (20%)
 static const float NMS_IOU_THRESHOLD = 0.45f;
 
